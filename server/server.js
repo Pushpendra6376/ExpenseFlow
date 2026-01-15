@@ -32,7 +32,7 @@ app.get('/', (req, res) => {
 });
 
 
-sequelize.sync({force:true})
+sequelize.sync()
   .then(() => console.log("Database Connected Successfully"))
   .catch(err => console.log("DB Connection Failed:", err));
 
