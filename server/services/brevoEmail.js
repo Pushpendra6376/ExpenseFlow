@@ -10,14 +10,12 @@ apiInstance.setApiKey(
 
 exports.sendResetEmail = async (email, resetToken) => {
     try {
-        // ✅ CHANGE: Port 3000 -> 5173 (Vite React ka default port)
-        // Frontend route hum '/reset-password/:token' rakhenge
         const resetLink = `http://localhost:5173/reset-password/${resetToken}`;
 
         const sendSmtpEmail = new Brevo.SendSmtpEmail();
 
         sendSmtpEmail.sender = {
-            email: "pp5395021@gmail.com", // Make sure ye email Brevo me Verified ho
+            email: "pp5395021@gmail.com", 
             name: "Expense Tracker"
         };
 
@@ -47,11 +45,11 @@ exports.sendResetEmail = async (email, resetToken) => {
         `;
 
         const result = await apiInstance.sendTransacEmail(sendSmtpEmail);
-        console.log("✅ Email Sent Successfully via Brevo");
+        console.log("Email Sent Successfully via Brevo");
         return true;
 
     } catch (err) {
-        console.error("❌ Email Error:", err.response?.text || err.message);
+        console.error("Email Error:", err.response?.text || err.message);
         return false;
     }
 };

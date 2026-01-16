@@ -7,6 +7,9 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 
+
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfUse from './pages/TermsOfUse';
 // 🛡️ Protected Route Component (Security Guard)
 // Ye check karega ki User ke paas Token hai ya nahi
 const ProtectedRoute = ({ children }) => {
@@ -32,6 +35,8 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/terms-of-use" element={<TermsOfUse />} />
         {/* === Private Routes (Sirf Logged In Users ke liye) === */}
         <Route 
           path="/dashboard" 

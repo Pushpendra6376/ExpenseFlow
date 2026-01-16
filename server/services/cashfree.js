@@ -52,7 +52,7 @@ const verifyCashfreePayment = async (orderId) => {
         }
 
     } catch (error) {
-        console.error("❌ Cashfree Verify Error:", error.message);
+        console.error("Cashfree Verify Error:", error.message);
         throw new Error("Payment Verification Failed");
     }
 };

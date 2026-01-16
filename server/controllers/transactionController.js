@@ -1,7 +1,7 @@
 const { sequelize } = require('../models'); 
 const Transaction = require('../models/Transaction');
 const User = require('../models/User');
-const { predictCategory } = require('../services/geminiService'); // ✅ Import kiya
+const { predictCategory } = require('../services/geminiService'); 
 
 // ==== ADD TRANSACTION ====
 exports.addTransaction = async (req, res) => {
@@ -9,26 +9,17 @@ exports.addTransaction = async (req, res) => {
         let { amount, type, category, description, date } = req.body;
         const userId = req.user.userId;
 
-        // ===============================================
-        // 🤖 AI LOGIC: Auto-Categorization
-        // ===============================================
-        
-        // Agar category missing hai aur Type 'Expense' hai
         if (type === 'expense' && (!category || category === 'Uncategorized')) {
             console.log("🤖 AI Categorizing for:", description);
             
-            // Gemini Service Call
             category = await predictCategory(description);
             
             console.log("✅ AI Selected:", category);
         }
 
-        // Agar tab bhi category nahi mili, to 'Other' daal do
         if (!category) {
             category = 'Other';
         }
-
-        // ===============================================
 
         const transaction = await Transaction.create({
             amount,

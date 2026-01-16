@@ -100,9 +100,9 @@ exports.forgotPassword = async (req, res) => {
         // Token Generate
         const resetToken = crypto.randomBytes(20).toString('hex');
 
-        // Database me save karo
+        // Database me save
         user.resetPasswordToken = resetToken;
-        user.resetPasswordExpire = Date.now() + 3600000; // 1 Hour
+        user.resetPasswordExpire = Date.now() + 3600; // 1 Hour
         await user.save();
 
         // ✅ Brevo function call kiya
@@ -130,7 +130,6 @@ exports.resetPassword = async (req, res) => {
         // URL se token milega (:token)
         const resetToken = req.params.token;
 
-        // User dhundo jiska token match kare AND time expire na hua ho
         const user = await User.findOne({
             where: {
                 resetPasswordToken: resetToken,
@@ -142,12 +141,10 @@ exports.resetPassword = async (req, res) => {
             return res.status(400).json({ success: false, message: "Invalid or Expired Token" });
         }
 
-        // Password Hash karo (Bcrypt use karke)
-        const bcrypt = require('bcryptjs'); // Ensure imported
+        const bcrypt = require('bcryptjs'); 
         const salt = await bcrypt.genSalt(10);
         user.password = await bcrypt.hash(req.body.password, salt);
 
-        // Token fields saaf kar do
         user.resetPasswordToken = null;
         user.resetPasswordExpire = null;
         

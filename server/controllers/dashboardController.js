@@ -6,7 +6,7 @@ exports.getDashboardData = async (req, res) => {
     try {
         const userId = req.user.userId;
 
-        // --- 1. Total Income Calculate karo (Direct Transaction Table se) ---
+        //Total Income Calculate 
         const totalIncomeObj = await Transaction.findOne({
             where: { userId, type: 'income' },
             attributes: [[sequelize.fn('SUM', sequelize.col('amount')), 'total']],
@@ -14,7 +14,7 @@ exports.getDashboardData = async (req, res) => {
         });
         const totalIncome = totalIncomeObj.total ? Number(totalIncomeObj.total) : 0;
 
-        // --- 2. Total Expense Calculate karo ---
+        //Total Expense Calculate
         const totalExpenseObj = await Transaction.findOne({
             where: { userId, type: 'expense' },
             attributes: [[sequelize.fn('SUM', sequelize.col('amount')), 'total']],
@@ -22,10 +22,10 @@ exports.getDashboardData = async (req, res) => {
         });
         const totalExpense = totalExpenseObj.total ? Number(totalExpenseObj.total) : 0;
 
-        // --- 3. Balance nikaalo ---
+        //Balance nikaalaa
         const totalBalance = totalIncome - totalExpense;
 
-        // --- 4. Recent Transactions (Last 30 days) ---
+        //Recent Transaction
         const last30Days = new Date();
         last30Days.setDate(last30Days.getDate() - 30);
 
@@ -34,14 +34,12 @@ exports.getDashboardData = async (req, res) => {
                 userId,
                 date: { [Op.gte]: last30Days }
             },
-            // ✅ Fix: 'title' hata kar 'description' kar diya
             attributes: ['id', 'description', 'category', 'date', 'type', 'amount'], 
             order: [['date', 'DESC']], 
             limit: 10,
             raw: true
         });
 
-        // --- 5. Response Bhejo ---
         res.json({
             success: true,
             userTotals: {                
