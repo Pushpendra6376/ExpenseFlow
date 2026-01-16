@@ -23,8 +23,12 @@ const Footer = () => {
             <h3 className="text-lg font-semibold mb-4 text-gray-200">Quick Links</h3>
             <ul className="space-y-2 text-gray-400 text-sm">
               <li><Link to="/add-transaction" className="hover:text-blue-400 transition">Add Transaction</Link></li>
-              <li><Link to="/PrivacyPolicy" className="hover:text-blue-400 transition">Privacy Policy</Link></li>
-              <li><Link to="/TermOfUse" className="hover:text-blue-400 transition">Terms of Use</Link></li>
+              
+              {/* ✅ FIXED: Changed /PrivacyPolicy to /privacy-policy */}
+              <li><Link to="/privacy-policy" className="hover:text-blue-400 transition">Privacy Policy</Link></li>
+              
+              {/* ✅ FIXED: Changed /TermOfUse to /terms-of-use */}
+              <li><Link to="/terms-of-use" className="hover:text-blue-400 transition">Terms of Use</Link></li>
             </ul>
           </div>
 

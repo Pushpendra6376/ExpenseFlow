@@ -108,3 +108,53 @@ exports.deleteTransaction = async (req, res) => {
         res.status(500).json({ success: false, error: 'Server Error' });
     }
 };
+
+// ==== UPDATE TRANSACTION (EDIT) ====
+exports.updateTransaction = async (req, res) => {
+    const t = await sequelize.transaction();
+    try {
+        const { id } = req.params;
+        const { amount, category, description, date, type } = req.body;
+        const userId = req.user.userId;
+
+        // Purana transaction dhundo
+        const transaction = await Transaction.findOne({ where: { id, userId } });
+        if (!transaction) {
+            await t.rollback();
+            return res.status(404).json({ success: false, error: 'Transaction not found' });
+        }
+
+        const user = await User.findByPk(userId);
+
+        // Logic: Pehle purana amount minus karo, fir naya add karo
+        let newIncome = Number(user.totalIncome);
+        let newExpense = Number(user.totalExpense);
+
+        // 1. Revert Old Amount
+        if (transaction.type === 'income') newIncome -= Number(transaction.amount);
+        else newExpense -= Number(transaction.amount);
+
+        // 2. Add New Amount
+        if (type === 'income') newIncome += Number(amount);
+        else newExpense += Number(amount);
+
+        // User Update
+        await user.update({ 
+            totalIncome: newIncome, 
+            totalExpense: newExpense 
+        }, { transaction: t });
+
+        // Transaction Update
+        await transaction.update({
+            amount, category, description, date, type
+        }, { transaction: t });
+
+        await t.commit();
+        res.status(200).json({ success: true, message: 'Transaction Updated' });
+
+    } catch (error) {
+        await t.rollback();
+        console.error(error);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
