@@ -22,7 +22,6 @@ const PrivacyPolicy = () => {
             <p>If you have questions, email us at <strong>pp5395021@gmail</strong>.</p>
         </div>
       </div>
-      <Footer />
     </div>
   );
 };

@@ -20,7 +20,6 @@ const TermsOfUse = () => {
             <p>ExpenseFlow is not liable for any financial decisions made based on the data provided.</p>
         </div>
       </div>
-      <Footer />
     </div>
   );
 };
