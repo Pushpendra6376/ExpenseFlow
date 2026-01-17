@@ -38,7 +38,7 @@ const Footer = () => {
             <ul className="space-y-3 text-gray-400 text-sm">
               <li className="flex items-center gap-2">
                 <FaEnvelope className="text-blue-500" />
-                <a href="mailto:pp5395021@gmail" className="hover:text-white transition">pp5395021@gmail</a>
+                <a href="mailto:pp5395021@gmail.com" className="hover:text-white transition">pp5395021@gmail.com</a>
               </li>
               <li className="flex items-center gap-2">
                 <FaPhone className="text-blue-500" />
