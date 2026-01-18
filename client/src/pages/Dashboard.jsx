@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import api from '../utils/api'; 
-import Navbar from '../components/Navbar';
-import AddTransactionModal from '../components/AddTransactionModal';
+import Navbar from '../components1/Navbar';
+import AddTransactionModal from '../components1/AddTransactionModal';
 import { FaArrowUp, FaArrowDown, FaRupeeSign, FaPlus, FaTrash, FaEdit } from 'react-icons/fa';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts'; // Chart Import
 import { toast } from 'react-toastify';

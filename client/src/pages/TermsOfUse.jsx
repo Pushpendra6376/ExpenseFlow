@@ -1,11 +1,8 @@
 import React from 'react';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
 
 const TermsOfUse = () => {
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar />
       <div className="flex-grow max-w-4xl mx-auto p-6 text-gray-800">
         <h1 className="text-3xl font-bold mb-4">Terms of Use</h1>
         
