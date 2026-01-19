@@ -1,73 +1,85 @@
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { Switch, Route, useLocation } from "wouter";
+import { queryClient } from "./lib/queryClient";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "./components1/ui/toaster";
+import { TooltipProvider } from "./components1/ui/tooltip";
+import { AuthProvider, useAuth } from "./lib/auth-context";
+import { ExpenseProvider } from "./lib/expense-context";
+import NotFound from "./pages/not-found";
+import LoginPage from "./pages/login1";
+import SignupPage from "./pages/signup";
+import DashboardPage from "./pages/dashoard";
+import AddTransactionPage from "./pages/add-transaction";
+import ReportsPage from "./pages/reports";
+import ProfilePage from "./pages/profile";
 
-import Footer from './components1/Footer';
+// Custom redirect component for Wouter
+function Redirect({ to }) {
+  const [, setLocation] = useLocation();
+  setLocation(to);
+  return null;
+}
 
-import Login from './pages/Login';
-import Register from './pages/Register';
-import Dashboard from './pages/Dashboard';
-import PrivacyPolicy from './pages/PrivacyPolicy';
-import TermsOfUse from './pages/TermsOfUse';
+function ProtectedRoute({ component: Component }) {
+  const { isAuthenticated } = useAuth();
 
-const ProtectedRoute = ({ children }) => {
-  const token = localStorage.getItem('token');
-  if (!token) {
-    return <Navigate to="/login" replace />;
+  if (!isAuthenticated) {
+    return <Redirect to="/login" />;
   }
-  return children;
-};
 
-const AppLayout = () => {
-  const location = useLocation();
+  return <Component />;
+}
 
-  const showFooterRoutes = [
-    '/login',
-    '/register',
-    '/privacy-policy',
-    '/terms-of-use'
-  ];
+function PublicRoute({ component: Component }) {
+  const { isAuthenticated } = useAuth();
 
-  const shouldShowFooter = showFooterRoutes.includes(location.pathname);
+  if (isAuthenticated) {
+    return <Redirect to="/" />;
+  }
 
+  return <Component />;
+}
+
+function Router() {
   return (
-    <div className="flex flex-col min-h-screen">
-      <ToastContainer position="top-right" autoClose={3000} />
-
-      <div className="flex-grow">
-        <Routes>
-          {/* Public Routes */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="/terms-of-use" element={<TermsOfUse />} />
-
-          {/* Private Routes */}
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
-          <Route path="*" element={<Navigate to="/login" />} />
-        </Routes>
-      </div>
-
-      {/* ✅ Footer ONLY for public pages */}
-      {shouldShowFooter && <Footer />}
-    </div>
+    <Switch>
+      <Route path="/login">
+        <PublicRoute component={LoginPage} />
+      </Route>
+      <Route path="/signup">
+        <PublicRoute component={SignupPage} />
+      </Route>
+      <Route path="/">
+        <ProtectedRoute component={DashboardPage} />
+      </Route>
+      <Route path="/add">
+        <ProtectedRoute component={AddTransactionPage} />
+      </Route>
+      <Route path="/reports">
+        <ProtectedRoute component={ReportsPage} />
+      </Route>
+      <Route path="/profile">
+        <ProtectedRoute component={ProfilePage} />
+      </Route>
+      <Route>
+        <NotFound />
+      </Route>
+    </Switch>
   );
-};
+}
 
 function App() {
   return (
-    <BrowserRouter>
-      <AppLayout />
-    </BrowserRouter>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <ExpenseProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Router />
+          </TooltipProvider>
+        </ExpenseProvider>
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }
 
