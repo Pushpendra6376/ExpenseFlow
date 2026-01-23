@@ -1,5 +1,6 @@
 const express = require('express');
 const dotenv = require('dotenv');
+const path = require('path');
 const cors = require('cors');
 require("./models");
 const sequelize = require("./config/db");
@@ -10,6 +11,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+
+app.use(express.static(path.join(__dirname, 'public')));
 // routes
 const transactionRoutes = require('./routes/transactionRoutes');
 const authRoutes = require('./routes/authRoute');
@@ -28,8 +31,20 @@ app.use('/api/reports', reportRoutes);
 
 
 app.get('/', (req, res) => {
-    res.send('ExpenseFlow Backend is Running!');
+    res.sendFile(path.join(__dirname, 'public', 'html', 'login_signup.html'));
 });
+
+app.get('/dashboard.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'html', 'dashboard.html'));
+});
+
+app.get('/transactions.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'html', 'transactions.html'));
+});
+
+app.get('/report.html', (req,res)=>{
+  res.sendFile(path.join(__dirname, 'public', 'html', 'report.html'))
+})
 
 
 sequelize.sync({alter:true})
