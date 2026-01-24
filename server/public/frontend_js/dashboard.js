@@ -104,5 +104,5 @@ function updateUI(data) {
 function logout() {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-    window.location.href = "login_signup.html";
+    window.location.href = "/";
 }

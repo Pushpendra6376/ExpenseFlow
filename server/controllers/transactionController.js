@@ -2,7 +2,7 @@ const { sequelize } = require('../models');
 const Transaction = require('../models/Transaction');
 const User = require('../models/User');
 const { predictCategory } = require('../services/geminiService'); 
-
+const { Op } = require('sequelize'); 
 // ==== ADD TRANSACTION ====
 exports.addTransaction = async (req, res) => {
     try {
@@ -45,17 +45,70 @@ exports.addTransaction = async (req, res) => {
 // === GET ALL TRANSACTIONS ===
 exports.getAllTransactions = async (req, res) => {
     try {
-        const transactions = await Transaction.findAll({
-            where: { userId: req.user.userId },
-            order: [['date', 'DESC']] 
+        const { page = 1, limit = 10, type, duration, startDate, endDate, search } = req.query;
+        const userId = req.user.userId;
+
+        const offset = (parseInt(page) - 1) * parseInt(limit);
+        const whereClause = { userId };
+
+        // 1. Filter by Type
+        if (type && type !== 'all') {
+            whereClause.type = type;
+        }
+
+        // 2. Search Filter (Description or Category)
+        if (search) {
+            whereClause[Op.or] = [
+                { description: { [Op.like]: `%${search}%` } },
+                { category: { [Op.like]: `%${search}%` } }
+            ];
+        }
+
+        // 3. Date Filter Logic
+        if (duration) {
+            const today = new Date();
+            let start, end;
+
+            if (duration === 'today') {
+                start = new Date();
+                end = new Date();
+            } else if (duration === 'yesterday') {
+                start = new Date(); 
+                start.setDate(today.getDate() - 1);
+                end = new Date(start);
+            } else if (duration === 'this_month') {
+                start = new Date(today.getFullYear(), today.getMonth(), 1);
+                end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+            } else if (duration === 'custom' && startDate && endDate) {
+                start = new Date(startDate);
+                end = new Date(endDate);
+            }
+
+            if (start && end) {
+                whereClause.date = {
+                    [Op.between]: [start, end]
+                };
+            }
+        }
+
+        // Use findAndCountAll for Pagination Data
+        const { count, rows } = await Transaction.findAndCountAll({
+            where: whereClause,
+            order: [['date', 'DESC']], // Latest first
+            limit: parseInt(limit),
+            offset: parseInt(offset)
         });
 
         res.status(200).json({
             success: true,
-            count: transactions.length,
-            data: transactions
+            totalItems: count,
+            totalPages: Math.ceil(count / limit),
+            currentPage: parseInt(page),
+            data: rows
         });
+
     } catch (error) {
+        console.error("Filter Error:", error);
         res.status(500).json({ success: false, error: 'Server Error' });
     }
 };
