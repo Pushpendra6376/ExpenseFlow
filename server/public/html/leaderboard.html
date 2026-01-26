@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard | ExpenseFlow</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="/css/dashboard.css"> <link rel="stylesheet" href="/css/leaderboard.css"> </head>
+<body>
+
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="brand">
+                <i class="fa-solid fa-wallet"></i>
+                <h2>ExpenseFlow</h2>
+            </div>
+            <nav class="menu">
+                <a href="dashboard.html"><i class="fa-solid fa-house"></i> Dashboard</a>
+                <a href="transaction.html"><i class="fa-solid fa-list"></i> Transactions</a>
+                <a href="report.html"><i class="fa-solid fa-chart-pie"></i> Reports</a>
+                <a href="profile.html"><i class="fa-solid fa-user"></i> Profile</a>
+                <a href="#" class="active"><i class="fa-solid fa-trophy"></i> Leaderboard</a>
+            </nav>
+            <div class="sidebar-footer">
+                <p class="user-greeting">Welcome, User</p>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-nav">
+                <h1 id="page-title"><i class="fa-solid fa-crown" style="color: #FFD700;"></i> Leaderboard</h1>
+            </header>
+
+            <div class="rank-card">
+                <div class="rank-info">
+                    <p>Your Current Rank</p>
+                    <h2 id="myRank">#--</h2>
+                </div>
+                <div class="rank-score">
+                    <p>Total Spent</p>
+                    <h2 id="myScore">₹0</h2>
+                </div>
+                <div class="trophy-icon">
+                    <i class="fa-solid fa-award"></i>
+                </div>
+            </div>
+
+            <div class="leaderboard-container">
+                <table class="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>User</th>
+                            <th>Total Expense</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboardList">
+                        </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="/frontend_js/toast.js"></script>
+    <script src="/frontend_js/leaderboard.js"></script>
+</body>
+</html>

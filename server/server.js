@@ -29,6 +29,9 @@ app.use('/api/leaderboard', leaderboardRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/reports', reportRoutes);
 
+app.get('/forget_password/:token', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'html', 'forget_password.html'));
+});
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'html', 'login_signup.html'));
@@ -38,14 +41,48 @@ app.get('/dashboard.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'html', 'dashboard.html'));
 });
 
-app.get('/transactions.html', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'html', 'transactions.html'));
+app.get('/transaction.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'html', 'transaction.html'));
 });
 
 app.get('/report.html', (req,res)=>{
   res.sendFile(path.join(__dirname, 'public', 'html', 'report.html'))
 })
 
+app.get('/profile.html', (req,res)=>{
+  res.sendFile(path.join(__dirname, 'public', 'html', 'profile.html'))
+})
+
+app.get('/leaderboard.html', (req,res)=>{
+  res.sendFile(path.join(__dirname, 'public', 'html', 'leaderboard.html'))
+})
+
+app.get('/payment_status.html', (req,res)=>{
+  res.sendFile(path.join(__dirname, 'public', 'html', 'payment_status.html'))
+})
+
+async function fixUserTotals() {
+    try {
+        console.log("🔄 Recalculating User Totals...");
+        const users = await User.findAll();
+
+        for (const user of users) {
+            // Calculate actual Income
+            const income = await Transaction.sum('amount', { where: { userId: user.id, type: 'income' } }) || 0;
+            
+            // Calculate actual Expense
+            const expense = await Transaction.sum('amount', { where: { userId: user.id, type: 'expense' } }) || 0;
+
+            // Update User
+            user.totalIncome = income;
+            user.totalExpense = expense;
+            await user.save();
+        }
+        console.log("✅ All User Totals Fixed!");
+    } catch (error) {
+        console.error("Fix Failed:", error);
+    }
+}
 
 sequelize.sync({alter:true})
   .then(() => console.log("Database Connected Successfully"))

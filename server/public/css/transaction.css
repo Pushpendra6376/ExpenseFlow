@@ -184,7 +184,7 @@ select, input[type="date"] {
     background: white;
     padding: 25px;
     border-radius: 12px;
-    width: 400px;
+    width: 600px;
 }
 
 .modal-content input, .modal-content select {
@@ -201,3 +201,4 @@ select, input[type="date"] {
 
 .save-btn { background: var(--primary); color: white; padding: 10px 20px; border:none; border-radius:6px; cursor:pointer;}
 .cancel-btn { background: #e5e7eb; color: #374151; padding: 10px 20px; border:none; border-radius:6px; cursor:pointer;}
+

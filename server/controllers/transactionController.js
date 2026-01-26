@@ -5,39 +5,52 @@ const { predictCategory } = require('../services/geminiService');
 const { Op } = require('sequelize'); 
 // ==== ADD TRANSACTION ====
 exports.addTransaction = async (req, res) => {
+    const t = await sequelize.transaction(); // Transaction start (Safety ke liye)
+
     try {
         let { amount, type, category, description, date } = req.body;
         const userId = req.user.userId;
 
-        if (type === 'expense' && (!category || category === 'Uncategorized')) {
-            console.log("🤖 AI Categorizing for:", description);
-            
-            category = await predictCategory(description);
-            
-            console.log("✅ AI Selected:", category);
+        // Validation
+        if (!amount || !type || !category) {
+            await t.rollback();
+            return res.status(400).json({ success: false, error: 'Please provide all fields' });
         }
 
-        if (!category) {
-            category = 'Other';
-        }
-
+        // 1. Transaction Create karo
         const transaction = await Transaction.create({
             amount,
-            type, // 'income' or 'expense'
+            type,
             category,
             description,
             date: date || new Date(),
             userId
-        });
+        }, { transaction: t });
+
+        // 2. User Table Update karo (Jadoo yahan hai) 🪄
+        const user = await User.findByPk(userId);
+        
+        if (user) {
+            if (type === 'income') {
+                // Agar income hai to totalIncome badhao
+                await user.increment('totalIncome', { by: amount, transaction: t });
+            } else if (type === 'expense') {
+                // Agar expense hai to totalExpense badhao
+                await user.increment('totalExpense', { by: amount, transaction: t });
+            }
+        }
+
+        await t.commit(); // Sab save karo
 
         res.status(201).json({
             success: true,
             data: transaction,
-            message: `Transaction added as ${category}`
+            message: 'Transaction Added & Totals Updated!'
         });
 
     } catch (error) {
-        console.error(error);
+        await t.rollback(); // Error aaya to sab undo karo
+        console.error("Add Transaction Error:", error);
         res.status(500).json({ success: false, error: 'Server Error' });
     }
 };
@@ -116,48 +129,50 @@ exports.getAllTransactions = async (req, res) => {
 //=== DELETE TRANSACTION ===
 exports.deleteTransaction = async (req, res) => {
     const t = await sequelize.transaction();
+
     try {
-        const { id } = req.params;
+        const transactionId = req.params.id;
         const userId = req.user.userId;
 
-        const transaction = await Transaction.findOne({ where: { id, userId } });
+        // Transaction dhundo
+        const transaction = await Transaction.findOne({
+            where: { id: transactionId, userId: userId }
+        });
 
         if (!transaction) {
             await t.rollback();
             return res.status(404).json({ success: false, error: 'Transaction not found' });
         }
 
-        const user = await User.findByPk(userId);
-        
-        let newIncome = Number(user.totalIncome);
-        let newExpense = Number(user.totalExpense);
+        const { amount, type } = transaction;
 
-        if (transaction.type === 'income') {
-            newIncome -= Number(transaction.amount);
-        } else {
-            newExpense -= Number(transaction.amount);
-        }
-
-        let newSavingsRate = 0;
-        if (newIncome > 0) {
-            newSavingsRate = ((newIncome - newExpense) / newIncome) * 100;
-        }
-
-        await user.update({
-            totalIncome: newIncome,
-            totalExpense: newExpense,
-            savingsRate: newSavingsRate
-        }, { transaction: t });
-
-    
+        // 1. Transaction Delete karo
         await transaction.destroy({ transaction: t });
+
+        // 2. User Table se paisa kam karo (Jadoo part 2) 🪄
+        const user = await User.findByPk(userId);
+
+        if (user) {
+            if (type === 'income') {
+                // Income delete hui, to totalIncome kam karo
+                await user.decrement('totalIncome', { by: amount, transaction: t });
+            } else if (type === 'expense') {
+                // Expense delete hua, to totalExpense kam karo
+                await user.decrement('totalExpense', { by: amount, transaction: t });
+            }
+        }
 
         await t.commit();
 
-        res.status(200).json({ success: true, message: 'Transaction deleted & Stats updated' });
+        res.status(200).json({
+            success: true,
+            data: {},
+            message: 'Transaction Deleted & Totals Updated!'
+        });
 
     } catch (error) {
         await t.rollback();
+        console.error("Delete Transaction Error:", error);
         res.status(500).json({ success: false, error: 'Server Error' });
     }
 };

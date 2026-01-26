@@ -10,7 +10,7 @@ apiInstance.setApiKey(
 
 exports.sendResetEmail = async (email, resetToken) => {
     try {
-        const resetLink = `http://localhost:5173/reset-password/${resetToken}`;
+        const resetLink = `http://localhost:5000/forget_password/${resetToken}`;
 
         const sendSmtpEmail = new Brevo.SendSmtpEmail();
 

@@ -9,7 +9,7 @@ if (!token) {
 }
 
 // 2. Initial Setup
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
     setupNavbar();
     fetchDashboardData();
     
@@ -17,7 +17,48 @@ document.addEventListener("DOMContentLoaded", () => {
     if (user && user.name) {
         document.querySelector(".user-greeting").innerText = `Welcome, ${user.name.split(' ')[0]}`;
     }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const orderId = urlParams.get('order_id');
+
+    if (orderId) {
+        await verifyPayment(orderId);
+    }
 });
+
+// === PAYMENT VERIFICATION FUNCTION ===
+async function verifyPayment(orderId) {
+    try {
+        const token = localStorage.getItem("token"); // Token nikalo
+        
+        // Backend API ko call karo (Token ke saath)
+        const res = await axios.post('http://localhost:5000/api/payment/verify', 
+            { orderId: orderId }, 
+            { headers: { Authorization: `Bearer ${token}` } } 
+        );
+
+        if (res.data.success) {
+            // 1. URL saaf karo (order_id hatao)
+            window.history.replaceState({}, document.title, "dashboard.html");
+            
+            // 2. LocalStorage update karo
+            let user = JSON.parse(localStorage.getItem("user"));
+            if(user) {
+                user.isPremium = true;
+                localStorage.setItem("user", JSON.stringify(user));
+            }
+
+            // 3. Congratulations Alert/Modal dikhao
+            alert("Congratulations! Premium Activated 👑");
+            
+            // 4. Page Reload (taaki UI update ho jaye)
+            location.reload();
+        }
+    } catch (error) {
+        console.error("Verification Failed", error);
+        alert("Payment verification failed. Please contact support.");
+    }
+}
 
 // 3. Navbar Logic (Premium vs Standard)
 function setupNavbar() {
@@ -35,7 +76,7 @@ function setupNavbar() {
         // Show Membership Button
         actionBtn.className = "premium-btn";
         actionBtn.innerHTML = '<i class="fa-solid fa-crown"></i> Buy Premium';
-        actionBtn.onclick = () => window.location.href = "premium.html"; // Make payment page later
+        actionBtn.onclick = () => buyPremium();
     }
 
     // Insert before Logout button

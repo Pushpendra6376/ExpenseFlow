@@ -18,7 +18,6 @@ exports.createOrder = async (req, res) => {
             orderId: orderId,
             amount: amount,
             customerId: userId,
-            customerName: userName,
             customerPhone: "9999999999" 
         });
 

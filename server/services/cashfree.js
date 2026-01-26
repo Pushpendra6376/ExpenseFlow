@@ -15,10 +15,10 @@ const createCashfreeOrder = async ({ orderId, amount, customerId, customerPhone 
             order_id: orderId,
             customer_details: {
                 customer_id: customerId,
-                customer_phone: customerPhone
+                customer_phone: customerPhone,
             },
             order_meta: {
-                return_url: `http://localhost:5173/payment/verify?order_id=${orderId}`, 
+            return_url: `http://localhost:5000/dashboard.html?order_id={order_id}`,            
             }
         };
 

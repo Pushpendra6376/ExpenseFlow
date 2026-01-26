@@ -1,0 +1,115 @@
+/* Inherit base styles from Dashboard */
+:root {
+    --gold: #FFD700;
+    --silver: #C0C0C0;
+    --bronze: #CD7F32;
+    --primary: #4F46E5;
+    --dark: #1f2937;
+}
+
+/* === MY RANK CARD === */
+.rank-card {
+    background: linear-gradient(135deg, #4F46E5, #3730A3);
+    color: white;
+    padding: 30px;
+    border-radius: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 20px rgba(79, 70, 229, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.rank-card::after {
+    content: '';
+    position: absolute;
+    top: -50%; right: -10%;
+    width: 200px; height: 200px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+}
+
+.rank-info h2, .rank-score h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-top: 5px;
+}
+
+.rank-info p, .rank-score p {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.trophy-icon {
+    font-size: 4rem;
+    color: rgba(255, 215, 0, 0.8);
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+/* === TABLE STYLES === */
+.leaderboard-container {
+    background: white;
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.leaderboard-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.leaderboard-table th {
+    text-align: left;
+    padding: 15px;
+    color: #6b7280;
+    font-weight: 500;
+    border-bottom: 2px solid #f3f4f6;
+}
+
+.leaderboard-table td {
+    padding: 15px;
+    border-bottom: 1px solid #f3f4f6;
+    color: var(--dark);
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+/* Rank Medals */
+.rank-badge {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+    font-size: 0.9rem;
+}
+
+.rank-1 { background: var(--gold); box-shadow: 0 0 10px var(--gold); }
+.rank-2 { background: var(--silver); }
+.rank-3 { background: var(--bronze); }
+.rank-other { background: #f3f4f6; color: #666; }
+
+/* User Column */
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.premium-crown {
+    color: var(--gold);
+    font-size: 0.9rem;
+}
