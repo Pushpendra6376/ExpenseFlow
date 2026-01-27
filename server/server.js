@@ -61,30 +61,8 @@ app.get('/payment_status.html', (req,res)=>{
   res.sendFile(path.join(__dirname, 'public', 'html', 'payment_status.html'))
 })
 
-async function fixUserTotals() {
-    try {
-        console.log("🔄 Recalculating User Totals...");
-        const users = await User.findAll();
 
-        for (const user of users) {
-            // Calculate actual Income
-            const income = await Transaction.sum('amount', { where: { userId: user.id, type: 'income' } }) || 0;
-            
-            // Calculate actual Expense
-            const expense = await Transaction.sum('amount', { where: { userId: user.id, type: 'expense' } }) || 0;
-
-            // Update User
-            user.totalIncome = income;
-            user.totalExpense = expense;
-            await user.save();
-        }
-        console.log("✅ All User Totals Fixed!");
-    } catch (error) {
-        console.error("Fix Failed:", error);
-    }
-}
-
-sequelize.sync({alter:true})
+sequelize.sync()
   .then(() => console.log("Database Connected Successfully"))
   .catch(err => console.log("DB Connection Failed:", err));
 
