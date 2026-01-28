@@ -4,13 +4,13 @@ const { v4: uuidv4 } = require("uuid");
 module.exports = {
   async up(queryInterface) {
 
-    // 1️⃣ Find manually created user
+    // Find manually created user
     const [users] = await queryInterface.sequelize.query(
       `SELECT id FROM Users WHERE name = 'Pushpendra6376' LIMIT 1`
     );
 
     if (!users.length) {
-      console.log("❌ User Pushpendra6376 not found. Seeder skipped.");
+      console.log(" User Pushpendra6376 not found. Seeder skipped.");
       return;
     }
 
@@ -20,7 +20,7 @@ module.exports = {
     let totalIncome = 0;
     let totalExpense = 0;
 
-    // 2️⃣ 900 EXPENSES
+    // 900 EXPENSES
     for (let i = 0; i < 900; i++) {
       const amt = Math.floor(Math.random() * 500) + 50;
       totalExpense += amt;
@@ -38,7 +38,7 @@ module.exports = {
       });
     }
 
-    // 3️⃣ 600 INCOMES
+    // 600 INCOMES
     for (let i = 0; i < 600; i++) {
       const amt = Math.floor(Math.random() * 2000) + 500;
       totalIncome += amt;
@@ -56,10 +56,9 @@ module.exports = {
       });
     }
 
-    // 4️⃣ Insert transactions
+
     await queryInterface.bulkInsert("Transactions", transactions);
 
-    // 5️⃣ Update totals in Users table
     await queryInterface.bulkUpdate(
       "Users",
       {
@@ -70,7 +69,7 @@ module.exports = {
       { id: userId }
     );
 
-    console.log("✅ Manual user seeded with 1500 transactions");
+    console.log("Manual user seeded with 1500 transactions");
   },
 
   async down(queryInterface) {

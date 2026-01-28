@@ -8,12 +8,11 @@ const s3 = new AWS.S3({
 });
 
 exports.uploadToS3 = async (data, fileName) => {
-    // Extension check karke ContentType set karenge
     const isExcel = fileName.endsWith('.xlsx');
     
     const params = {
         Bucket: process.env.AWS_BUCKET_NAME,
-        Key: `reports/${fileName}`, // Reports folder me save hoga
+        Key: `reports/${fileName}`, 
         Body: data,
         //ACL: 'public-read', // Taaki user link se download kar sake
         ContentType: isExcel 

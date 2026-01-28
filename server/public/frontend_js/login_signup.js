@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:5000"; // Ensure this matches your server port
+const BASE_URL = "http://localhost:5000"; 
 
 // DOM Elements
 const signUpBtn = document.getElementById("showSignUp");

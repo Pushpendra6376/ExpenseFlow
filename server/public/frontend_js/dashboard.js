@@ -1,6 +1,5 @@
 const BASE_URL = "http://localhost:5000";
 
-// 1. Auth Check (Protect the Route)
 const token = localStorage.getItem("token");
 const user = JSON.parse(localStorage.getItem("user"));
 
@@ -8,12 +7,10 @@ if (!token) {
     window.location.href = "login_signup.html";
 }
 
-// 2. Initial Setup
 document.addEventListener("DOMContentLoaded", async () => {
     setupNavbar();
     fetchDashboardData();
     
-    // Set Name
     if (user && user.name) {
         document.querySelector(".user-greeting").innerText = `Welcome, ${user.name.split(' ')[0]}`;
     }
@@ -26,32 +23,26 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 });
 
-// === PAYMENT VERIFICATION FUNCTION ===
 async function verifyPayment(orderId) {
     try {
         const token = localStorage.getItem("token"); // Token nikalo
         
-        // Backend API ko call karo (Token ke saath)
         const res = await axios.post('http://localhost:5000/api/payment/verify', 
             { orderId: orderId }, 
             { headers: { Authorization: `Bearer ${token}` } } 
         );
 
         if (res.data.success) {
-            // 1. URL saaf karo (order_id hatao)
             window.history.replaceState({}, document.title, "dashboard.html");
             
-            // 2. LocalStorage update karo
             let user = JSON.parse(localStorage.getItem("user"));
             if(user) {
                 user.isPremium = true;
                 localStorage.setItem("user", JSON.stringify(user));
             }
 
-            // 3. Congratulations Alert/Modal dikhao
             alert("Congratulations! Premium Activated 👑");
             
-            // 4. Page Reload (taaki UI update ho jaye)
             location.reload();
         }
     } catch (error) {
@@ -60,7 +51,6 @@ async function verifyPayment(orderId) {
     }
 }
 
-// 3. Navbar Logic (Premium vs Standard)
 function setupNavbar() {
     const navActions = document.getElementById("navActions");
     const isPremium = user && user.isPremium;
@@ -68,22 +58,18 @@ function setupNavbar() {
     const actionBtn = document.createElement("button");
 
     if (isPremium) {
-        // Show Leaderboard Button
         actionBtn.className = "leaderboard-btn";
         actionBtn.innerHTML = '<i class="fa-solid fa-trophy"></i> Leaderboard';
         actionBtn.onclick = () => window.location.href = "leaderboard.html";
     } else {
-        // Show Membership Button
         actionBtn.className = "premium-btn";
         actionBtn.innerHTML = '<i class="fa-solid fa-crown"></i> Buy Premium';
         actionBtn.onclick = () => buyPremium();
     }
 
-    // Insert before Logout button
     navActions.insertBefore(actionBtn, navActions.firstChild);
 }
 
-// 4. Fetch Stats & Transactions
 async function fetchDashboardData() {
     try {
         const res = await axios.get(`${BASE_URL}/api/dashboard/stats`, {
@@ -102,17 +88,14 @@ async function fetchDashboardData() {
     }
 }
 
-// 5. Update UI Elements
 function updateUI(data) {
     const { totalIncome, totalExpense, balance } = data.userTotals;
     const transactions = data.recentTransactions;
 
-    // Update Stats
     document.getElementById("totalIncome").innerText = `₹${totalIncome}`;
     document.getElementById("totalExpense").innerText = `₹${totalExpense}`;
     document.getElementById("totalBalance").innerText = `₹${balance}`;
 
-    // Update Transaction Table (Limit to 6)
     const list = document.getElementById("transactionList");
     list.innerHTML = ""; // Clear loader
 
@@ -121,7 +104,6 @@ function updateUI(data) {
         return;
     }
 
-    // Slice to show only latest 6
     const latestSix = transactions.slice(0, 6);
 
     latestSix.forEach(txn => {
@@ -141,7 +123,7 @@ function updateUI(data) {
     });
 }
 
-// 6. Logout Function
+// logout function
 function logout() {
     localStorage.removeItem("token");
     localStorage.removeItem("user");

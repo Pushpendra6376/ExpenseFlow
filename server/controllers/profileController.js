@@ -1,7 +1,7 @@
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 
-// 1. GET PROFILE (Details + Stats)
+// 1. GET PROFILE
 exports.getProfile = async (req, res) => {
     try {
         const user = await User.findByPk(req.user.userId, {
@@ -17,7 +17,7 @@ exports.getProfile = async (req, res) => {
     }
 };
 
-// 2. UPDATE PROFILE (Sirf Name update karenge abhi)
+// 2. UPDATE PROFILE 
 exports.updateProfile = async (req, res) => {
     try {
         const { name } = req.body;
@@ -32,7 +32,7 @@ exports.updateProfile = async (req, res) => {
     }
 };
 
-// 3. CHANGE PASSWORD (Security)
+// 3. CHANGE PASSWORD
 exports.changePassword = async (req, res) => {
     try {
         const { oldPassword, newPassword } = req.body;

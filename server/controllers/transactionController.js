@@ -158,7 +158,7 @@ exports.updateTransaction = async (req, res) => {
             return res.status(404).json({ success: false, error: 'Transaction not found' });
         }
 
-        // 1️⃣ revert old
+        //  revert old
         if (transaction.type === 'income') {
             await User.decrement('totalIncome', {
                 by: transaction.amount,
@@ -173,7 +173,7 @@ exports.updateTransaction = async (req, res) => {
             });
         }
 
-        // 2️⃣ add new
+        //  add new
         if (type === 'income') {
             await User.increment('totalIncome', {
                 by: amount,
@@ -188,7 +188,7 @@ exports.updateTransaction = async (req, res) => {
             });
         }
 
-        // 3️⃣ update transaction
+        //  update transaction
         await transaction.update({
             amount,
             category,

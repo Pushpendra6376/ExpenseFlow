@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
     fetchProfile();
 });
 
-// 1. Fetch & Show Data
+// Fetch & Show Data
 async function fetchProfile() {
     try {
         const res = await axios.get(`${BASE_URL}/api/profile`, {
@@ -17,16 +17,14 @@ async function fetchProfile() {
         if (res.data.success) {
             const user = res.data.user;
 
-            // Fill Inputs
             document.getElementById("fullName").value = user.name;
             document.getElementById("email").value = user.email;
             document.getElementById("joinDate").value = new Date(user.createdAt).toDateString();
             
-            // Stats
             document.getElementById("totalInc").innerText = `₹${user.totalIncome}`;
             document.getElementById("totalExp").innerText = `₹${user.totalExpense}`;
 
-            // Avatar & Badge
+
             const initial = user.name.charAt(0).toUpperCase();
             document.getElementById("avatarText").innerText = initial;
             
@@ -40,7 +38,7 @@ async function fetchProfile() {
     }
 }
 
-// 2. Update Name
+// Update Name
 document.getElementById("profileForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     const name = document.getElementById("fullName").value;
@@ -52,7 +50,6 @@ document.getElementById("profileForm").addEventListener("submit", async (e) => {
 
         if (res.data.success) {
             showToast("Profile Updated!");
-            // Update LocalStorage Name too
             let localUser = JSON.parse(localStorage.getItem("user"));
             localUser.name = name;
             localStorage.setItem("user", JSON.stringify(localUser));

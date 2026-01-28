@@ -16,13 +16,13 @@ document.addEventListener("DOMContentLoaded", () => {
     fetchTransactions();
 });
 
-// === FETCH DATA ===
+//FETCH DATA
 async function fetchTransactions() {
     const type = document.getElementById("typeFilter").value;
     const duration = document.getElementById("dateFilter").value;
     const search = document.getElementById("searchInput").value;
     
-    // Custom Date Logic
+    // Custom Date 
     let startDate = "", endDate = "";
     if (duration === 'custom') {
         startDate = document.getElementById("startDate").value;
@@ -57,7 +57,7 @@ async function fetchTransactions() {
     }
 }
 
-// === RENDER TABLE ===
+// RENDER TABLE
 function renderTable(transactions) {
     const tbody = document.getElementById("transactionList");
     tbody.innerHTML = "";
@@ -88,12 +88,12 @@ function renderTable(transactions) {
     });
 }
 
-// === RENDER PAGINATION (Google Style) ===
+// PAGINATION
 function renderPagination() {
     const container = document.getElementById("paginationControls");
     container.innerHTML = "";
 
-    // Helper to create button
+
     const createBtn = (text, page, isActive = false, isDisabled = false) => {
         const btn = document.createElement("button");
         btn.className = `page-btn ${isActive ? 'active' : ''} ${isDisabled ? 'disabled' : ''}`;
@@ -104,10 +104,9 @@ function renderPagination() {
         container.appendChild(btn);
     };
 
-    // Previous Button
+    
     createBtn("<", currentPage - 1, false, currentPage === 1);
 
-    // Logic for numbered buttons (1 ... 4 5 6 ... 10)
     if (totalPages <= 7) {
         for (let i = 1; i <= totalPages; i++) createBtn(i, i, i === currentPage);
     } else {
@@ -128,11 +127,10 @@ function renderPagination() {
         createBtn(totalPages, totalPages, totalPages === currentPage);
     }
 
-    // Next Button
+    
     createBtn(">", currentPage + 1, false, currentPage === totalPages || totalPages === 0);
 }
 
-// === HANDLERS ===
 function changePage(page) {
     if (page < 1 || page > totalPages) return;
     currentPage = page;
@@ -140,7 +138,7 @@ function changePage(page) {
 }
 
 function applyFilters() {
-    currentPage = 1; // Reset to page 1 on filter change
+    currentPage = 1; 
     limit = document.getElementById("limitSelect").value;
     fetchTransactions();
 }
@@ -170,7 +168,7 @@ function debounceSearch() {
     }, 500);
 }
 
-// === DELETE LOGIC ===
+// DELETE LOGIC 
 async function deleteTransaction(id) {
     if (!confirm("Are you sure?")) return;
     try {
@@ -178,13 +176,13 @@ async function deleteTransaction(id) {
             headers: { Authorization: `Bearer ${token}` }
         });
         showToast("Deleted successfully");
-        fetchTransactions(); // Refresh
+        fetchTransactions(); 
     } catch (err) {
         showToast("Delete failed");
     }
 }
 
-// === ADD/EDIT MODAL LOGIC ===
+
 const modal = document.getElementById("transactionModal");
 const form = document.getElementById("transactionForm");
 

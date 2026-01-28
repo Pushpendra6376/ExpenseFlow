@@ -22,7 +22,7 @@ exports.getDashboardData = async (req, res) => {
         });
         const totalExpense = totalExpenseObj.total ? Number(totalExpenseObj.total) : 0;
 
-        //Balance nikaalaa
+        //Balance 
         const totalBalance = totalIncome - totalExpense;
 
         //Recent Transaction

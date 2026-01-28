@@ -6,7 +6,7 @@ if (!token) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    // Show user name in sidebar
+    
     const user = JSON.parse(localStorage.getItem("user"));
     if (user && user.name) {
         document.querySelector(".user-greeting").innerText = `Welcome, ${user.name.split(' ')[0]}`;
@@ -27,7 +27,6 @@ async function fetchLeaderboard() {
 
     } catch (err) {
         console.error("Leaderboard Error:", err);
-        // If 403 (Access Denied for Non-Premium), redirect or show message
         if (err.response && err.response.status === 403) {
             alert("This feature is for Premium Users only!");
             window.location.href = "dashboard.html";
@@ -59,8 +58,6 @@ function updateUI(data) {
         // Premium Icon
         const premiumIcon = user.isPremium ? `<i class="fa-solid fa-crown premium-crown" title="Premium Member"></i>` : '';
 
-        // Row Highlight (if it's ME)
-        // Check local storage ID vs row ID
         const currentUserId = JSON.parse(localStorage.getItem("user")).id;
         const isMe = user.id === currentUserId ? 'style="background-color: #EEF2FF;"' : '';
 

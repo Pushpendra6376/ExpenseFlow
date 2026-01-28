@@ -1,5 +1,5 @@
 const cashfree = Cashfree({
-    mode: "sandbox", // Production me "production" karein
+    mode: "sandbox", 
 });
 
 async function buyPremium() {
@@ -10,8 +10,6 @@ async function buyPremium() {
             return;
         }
 
-        // 1. Create Order on Backend
-        // Amount hardcoded 199 hai, aap chahe to dynamic rakh sakte hain
         const res = await axios.post(`${BASE_URL}/api/payment/create-order`, 
             { amount: 199 }, 
             { headers: { Authorization: `Bearer ${token}` } }
@@ -20,10 +18,9 @@ async function buyPremium() {
         if (res.data.success) {
             const sessionId = res.data.paymentSessionId;
             
-            // 2. Launch Cashfree Checkout
             const checkoutOptions = {
                 paymentSessionId: sessionId,
-                redirectTarget: "_self", // Wahi tab me open hoga
+                redirectTarget: "_self", 
             };
             
             cashfree.checkout(checkoutOptions);
@@ -37,7 +34,6 @@ async function buyPremium() {
     }
 }
 
-// Button par event listener lagayein
 document.addEventListener("DOMContentLoaded", () => {
     // Dashboard.js me humne button banaya tha, us par onclick laga hua tha.
     // Agar nahi hai to yahan id se attach kar sakte hain.

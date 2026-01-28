@@ -6,13 +6,11 @@ if (!token) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    // Set user name
+
     const user = JSON.parse(localStorage.getItem("user"));
     if (user && user.name) {
         document.querySelector(".user-greeting").innerText = `Welcome, ${user.name.split(' ')[0]}`;
     }
-
-    // Load History
     fetchReportHistory();
 });
 
@@ -59,7 +57,7 @@ async function downloadReport() {
             // Auto Download Trigger
             const link = document.createElement('a');
             link.href = res.data.fileUrl;
-            link.target = "_blank"; // Open in new tab (S3 link)
+            link.target = "_blank"; //(S3 link)
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);

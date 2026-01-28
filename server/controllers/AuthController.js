@@ -107,13 +107,11 @@ exports.forgotPassword = async (req, res) => {
         user.resetPasswordExpire = Date.now() + 3600000; // 10 minutes
         await user.save();
 
-        // ✅ Brevo function call kiya
         const emailSent = await sendResetEmail(user.email, resetToken);
 
         if (emailSent) {
             res.status(200).json({ success: true, message: "Reset link sent to your email" });
         } else {
-            // Agar fail hua to fields clear karo
             user.resetPasswordToken = null;
             user.resetPasswordExpire = null;
             await user.save();
@@ -126,10 +124,10 @@ exports.forgotPassword = async (req, res) => {
     }
 };
 
-// 2. RESET PASSWORD (Password Update karo)
+// 2. RESET PASSWORD 
 exports.resetPassword = async (req, res) => {
     try {
-        // URL se token milega (:token)
+        // URL se token milega
         const resetToken = req.params.token;
 
         const user = await User.findOne({

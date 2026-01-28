@@ -3,7 +3,7 @@ const router = express.Router();
 const { createOrder, verifyPayment } = require('../controllers/paymentController');
 const authenticate = require('../middleware/AuthMiddleware');
 
-// Dono routes secure hone chahiye
+
 router.post('/create-order', authenticate, createOrder);
 router.post('/verify', authenticate, verifyPayment);
 
