@@ -15,7 +15,7 @@ exports.uploadToS3 = async (data, fileName) => {
         Bucket: process.env.AWS_BUCKET_NAME,
         Key: `reports/${fileName}`, // Reports folder me save hoga
         Body: data,
-        ACL: 'public-read', // Taaki user link se download kar sake
+        //ACL: 'public-read', // Taaki user link se download kar sake
         ContentType: isExcel 
             ? "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" 
             : "text/csv",

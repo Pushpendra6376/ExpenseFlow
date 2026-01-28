@@ -4,8 +4,109 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reports | ExpenseFlow</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="/css/dashboard.css"> 
+    <link rel="stylesheet" href="/css/report.css">    
 </head>
 <body>
-    <h1>This is report page</h1>
+
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="brand">
+                <i class="fa-solid fa-wallet"></i>
+                <h2>ExpenseFlow</h2>
+            </div>
+            <nav class="menu">
+                <a href="dashboard.html"><i class="fa-solid fa-house"></i> Dashboard</a>
+                <a href="transaction.html"><i class="fa-solid fa-list"></i> Transactions</a>
+                <a href="#" class="active"><i class="fa-solid fa-chart-pie"></i> Reports</a>
+                <a href="profile.html"><i class="fa-solid fa-user"></i> Profile</a>
+                <a href="leaderboard.html"><i class="fa-solid fa-trophy"></i> Leaderboard</a>
+            </nav>
+            <div class="sidebar-footer">
+                <p class="user-greeting">Welcome, User</p>
+                <button onclick="logout()" class="logout-btn"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-nav">
+                <h1><i class="fa-solid fa-file-invoice-dollar"></i> Financial Reports</h1>
+            </header>
+
+            <div class="reports-wrapper">
+                
+                <div class="report-card">
+                    <h3>Generate New Report</h3>
+                    <div class="form-group">
+                        <label>Select Period:</label>
+                        <select id="frequency" onchange="toggleCustomDate()">
+                            <option value="today">Today</option>
+                            <option value="week">This Week</option>
+                            <option value="month">This Month</option>
+                            <option value="custom">Custom Range</option>
+                        </select>
+                    </div>
+
+                    <div id="custom-date-box" class="date-row hidden">
+                        <div class="form-group">
+                            <label>From:</label>
+                            <input type="date" id="startDate">
+                        </div>
+                        <div class="form-group">
+                            <label>To:</label>
+                            <input type="date" id="endDate">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Report Format:</label>
+                        <div class="radio-group">
+                            <label class="radio-box">
+                                <input type="radio" name="fileType" value="csv" checked>
+                                <i class="fa-solid fa-file-csv"></i> CSV
+                            </label>
+                            <label class="radio-box">
+                                <input type="radio" name="fileType" value="excel">
+                                <i class="fa-solid fa-file-excel"></i> Excel
+                            </label>
+                        </div>
+                    </div>
+
+                    <button id="downloadBtn" onclick="downloadReport()">
+                        <i class="fa-solid fa-cloud-arrow-down"></i> Download Report
+                    </button>
+                </div>
+
+                <div class="history-card">
+                    <h3>Download History</h3>
+                    <div class="table-container">
+                        <table class="history-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Period</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyList">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="./frontend_js/toast.js"></script>
+    <script src="./frontend_js/report.js"></script>
 </body>
 </html>

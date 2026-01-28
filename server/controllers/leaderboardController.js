@@ -1,13 +1,11 @@
+const { sequelize } = require("../models");
 const User = require('../models/User');
 const { Op } = require('sequelize');
 
 exports.getLeaderboard = async (req, res) => {
     try {
-        
         const leaderboard = await User.findAll({
-    
-            order: [['totalExpense', 'DESC']],
-            
+            order: [[sequelize.literal('CAST(totalExpense AS DECIMAL(10,2))'), 'DESC']],
             limit: 10,
             attributes: ['id', 'name', 'totalExpense', 'isPremium']
         });

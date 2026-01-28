@@ -20,7 +20,7 @@ const dashboardRoutes = require('./routes/dashboardRoutes');
 const leaderboardRoutes = require('./routes/leaderboardRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const reportRoutes = require('./routes/reportRoutes');
-
+const profileRoute = require('./routes/profileRoutes')
 
 app.use('/api/auth', authRoutes);
 app.use('/api/transactions', transactionRoutes);
@@ -28,6 +28,7 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/leaderboard', leaderboardRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/reports', reportRoutes);
+app.use('/api/profile', profileRoute)
 
 app.get('/forget_password/:token', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'html', 'forget_password.html'));
