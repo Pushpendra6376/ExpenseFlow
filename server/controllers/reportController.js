@@ -5,39 +5,65 @@ const ExcelJS = require('exceljs');
 const { Op } = require('sequelize'); 
 const { uploadToS3 } = require('../services/s3Service');
 
+// 1. GET PREVIEW (Table Data dikhane ke liye)
+exports.getReportPreview = async (req, res) => {
+    try {
+        const userId = req.user.userId;
+        const { startDate, endDate, page = 1, limit = 10 } = req.body; // Body se data lenge
+
+        if (!startDate || !endDate) {
+            return res.status(400).json({ success: false, message: "Dates required" });
+        }
+
+        const start = new Date(startDate); start.setHours(0,0,0,0);
+        const end = new Date(endDate); end.setHours(23,59,59,999);
+        const offset = (page - 1) * limit;
+
+        // Query with Pagination
+        const { count, rows } = await Transaction.findAndCountAll({
+            where: {
+                userId,
+                date: { [Op.between]: [start, end] }
+            },
+            order: [['date', 'DESC']],
+            limit: Number(limit),
+            offset: Number(offset)
+        });
+
+        res.status(200).json({
+            success: true,
+            totalItems: count,
+            totalPages: Math.ceil(count / limit),
+            currentPage: Number(page),
+            data: rows
+        });
+
+    } catch (error) {
+        console.error("Preview Error:", error);
+        res.status(500).json({ success: false, message: "Error fetching data" });
+    }
+};
+
+// 2. DOWNLOAD REPORT (Apka purana code, bas 'frequency' logic hata diya aur Custom Range fix kiya)
 exports.downloadReport = async (req, res) => {
     try {
         const userId = req.user.userId;
-        const { reportType, frequency, startDate, endDate } = req.body; 
+        const { reportType, startDate, endDate } = req.body; 
 
-        // DATE LOGIC 
-        let queryDate = {};
-        const now = new Date();
-        const getStartOfDay = (date) => new Date(date.setHours(0,0,0,0));
-        
-        switch (frequency) {
-            case 'today': queryDate = {[Op.gte]: getStartOfDay(new Date()), [Op.lte]: new Date()}; break;
-            case 'week': 
-                const startOfWeek = new Date(); startOfWeek.setDate(now.getDate() - 7);
-                queryDate = {[Op.gte]: getStartOfDay(startOfWeek), [Op.lte]: now}; break;
-            case 'month': 
-                const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-                queryDate = {[Op.gte]: startOfMonth, [Op.lte]: now}; break;
-            case 'custom': if(startDate && endDate) queryDate = {[Op.between]: [new Date(startDate), new Date(endDate)]}; break;
-            default: queryDate = null;
-        }
-
-        const whereCondition = { userId };
-        if (queryDate) whereCondition.date = queryDate;
+        const start = new Date(startDate); start.setHours(0,0,0,0);
+        const end = new Date(endDate); end.setHours(23,59,59,999);
 
         const transactions = await Transaction.findAll({
-            where: whereCondition,
+            where: { 
+                userId, 
+                date: { [Op.between]: [start, end] }
+            },
             raw: true,
             order: [['date', 'DESC']]
         });
 
         if (!transactions.length) {
-            return res.status(404).json({ success: false, message: "No data found" });
+            return res.status(404).json({ success: false, message: "No data found to download" });
         }
 
         let fileBuffer;
@@ -53,37 +79,27 @@ exports.downloadReport = async (req, res) => {
                 { header: 'Description', key: 'description', width: 30 }
             ];
             worksheet.addRows(transactions);
-            
             fileBuffer = await workbook.xlsx.writeBuffer();
             fileName = `Report_${userId}_${Date.now()}.xlsx`;
-        
         } else {
-
             const fields = ['date', 'category', 'type', 'amount', 'description'];
             const parser = new Parser({ fields });
             const csv = parser.parse(transactions);
-            
             fileBuffer = Buffer.from(csv);
             fileName = `Report_${userId}_${Date.now()}.csv`;
         }
 
-        console.log("Uploading to S3...");
         const fileUrl = await uploadToS3(fileBuffer, fileName);
-        console.log("Uploaded URL:", fileUrl);
 
         await ReportLog.create({
-            userId: userId,
+            userId,
             reportType: reportType || 'CSV',
-            period: frequency || 'All Time',
+            period: `${startDate} to ${endDate}`,
             fileUrl: fileUrl, 
             status: 'SUCCESS'
         });
 
-        res.status(200).json({
-            success: true,
-            message: "Report generated successfully",
-            fileUrl: fileUrl 
-        });
+        res.status(200).json({ success: true, fileUrl });
 
     } catch (error) {
         console.error("Report Error:", error);
@@ -91,21 +107,15 @@ exports.downloadReport = async (req, res) => {
     }
 };
 
+// 3. GET HISTORY
 exports.getReportLogs = async (req, res) => {
     try {
         const logs = await ReportLog.findAll({
             where: { userId: req.user.userId },
             order: [['createdAt', 'DESC']] 
         });
-
-        res.status(200).json({
-            success: true,
-            count: logs.length,
-            logs
-        });
-
+        res.status(200).json({ success: true, logs });
     } catch (error) {
-        console.error("Log Error:", error);
         res.status(500).json({ success: false, error: 'Server Error' });
     }
 };

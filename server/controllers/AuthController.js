@@ -104,7 +104,7 @@ exports.forgotPassword = async (req, res) => {
 
         // Database me save
         user.resetPasswordToken = resetToken;
-        user.resetPasswordExpire = Date.now() + 3600000; // 10 minutes
+        user.resetPasswordExpire = Date.now() + 600000; // 10 minutes
         await user.save();
 
         const emailSent = await sendResetEmail(user.email, resetToken);

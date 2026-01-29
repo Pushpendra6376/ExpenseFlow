@@ -6,9 +6,8 @@
     <title>Reports | ExpenseFlow</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <link rel="stylesheet" href="/css/dashboard.css"> 
-    <link rel="stylesheet" href="/css/report.css">    
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="/css/report.css">
 </head>
 <body>
 
@@ -33,80 +32,93 @@
 
         <main class="main-content">
             <header class="top-nav">
-                <h1><i class="fa-solid fa-file-invoice-dollar"></i> Financial Reports</h1>
+                <h1>Financial Reports</h1>
             </header>
 
-            <div class="reports-wrapper">
+            <div class="tabs-container">
+                <button class="tab-btn active" onclick="switchTab('new')">Get New Report</button>
+                <button class="tab-btn" onclick="switchTab('history')">Report Logs</button>
+            </div>
+
+            <div id="new-report-section">
                 
                 <div class="report-card">
-                    <h3>Generate New Report</h3>
-                    <div class="form-group">
-                        <label>Select Period:</label>
-                        <select id="frequency" onchange="toggleCustomDate()">
-                            <option value="today">Today</option>
-                            <option value="week">This Week</option>
-                            <option value="month">This Month</option>
-                            <option value="custom">Custom Range</option>
-                        </select>
-                    </div>
-
-                    <div id="custom-date-box" class="date-row hidden">
+                    <div class="filters-row">
                         <div class="form-group">
-                            <label>From:</label>
+                            <label>Start Date</label>
                             <input type="date" id="startDate">
                         </div>
                         <div class="form-group">
-                            <label>To:</label>
+                            <label>End Date</label>
                             <input type="date" id="endDate">
                         </div>
+                        <button class="search-btn" onclick="searchReports(1)">
+                            <i class="fa-solid fa-search"></i> Search
+                        </button>
                     </div>
+                </div>
 
-                    <div class="form-group">
-                        <label>Report Format:</label>
-                        <div class="radio-group">
-                            <label class="radio-box">
-                                <input type="radio" name="fileType" value="csv" checked>
-                                <i class="fa-solid fa-file-csv"></i> CSV
-                            </label>
-                            <label class="radio-box">
-                                <input type="radio" name="fileType" value="excel">
-                                <i class="fa-solid fa-file-excel"></i> Excel
-                            </label>
+                <div id="preview-container" class="report-card hidden" style="margin-top: 20px;">
+                    <div class="preview-header">
+                        <h3>Transaction Preview</h3>
+                        
+                        <div class="download-controls">
+                            <div class="radio-group-mini">
+                                <label><input type="radio" name="fileType" value="csv" checked> CSV</label>
+                                <label><input type="radio" name="fileType" value="excel"> Excel</label>
+                            </div>
+                            <button id="downloadBtn" onclick="downloadReport()">
+                                <i class="fa-solid fa-cloud-arrow-down"></i> Download
+                            </button>
                         </div>
                     </div>
 
-                    <button id="downloadBtn" onclick="downloadReport()">
-                        <i class="fa-solid fa-cloud-arrow-down"></i> Download Report
-                    </button>
-                </div>
-
-                <div class="history-card">
-                    <h3>Download History</h3>
                     <div class="table-container">
-                        <table class="history-table">
+                        <table class="report-table">
                             <thead>
                                 <tr>
                                     <th>Date</th>
+                                    <th>Category</th>
+                                    <th>Desc</th>
+                                    <th>Amount</th>
                                     <th>Type</th>
-                                    <th>Period</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody id="historyList">
+                            <tbody id="previewList">
                                 </tbody>
                         </table>
                     </div>
-                </div>
 
+                    <div class="pagination" id="paginationControls">
+                        </div>
+                </div>
             </div>
+
+            <div id="history-section" class="report-card hidden">
+                <h3>Download History</h3>
+                <div class="table-container">
+                    <table class="report-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Period</th>
+                                <th>Status</th>
+                                <th>Link</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyList"></tbody>
+                    </table>
+                </div>
+            </div>
+
         </main>
     </div>
 
     <div id="toast" class="toast"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="./frontend_js/toast.js"></script>
-    <script src="./frontend_js/report.js"></script>
+    <script src="/frontend_js/toast.js"></script>
+    <script src="/frontend_js/report.js"></script>
 </body>
 </html>

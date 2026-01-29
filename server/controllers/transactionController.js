@@ -15,14 +15,14 @@ exports.addTransaction = async (req, res) => {
             return res.status(400).json({ success: false, error: 'Amount & type required' });
         }
 
-        // 🤖 AI Category
+        // AI Category
         if (type === 'expense' && (!category || category === 'Uncategorized')) {
             category = await predictCategory(description);
         }
 
         if (!category) category = 'Other';
 
-        // 1️⃣ Create transaction
+        //  Create transaction
         const transaction = await Transaction.create({
             amount,
             type,
@@ -32,7 +32,7 @@ exports.addTransaction = async (req, res) => {
             userId
         }, { transaction: t });
 
-        // 2️⃣ Update user totals (SAFE)
+        //  Update user totals (SAFE)
         if (type === 'income') {
             await User.increment('totalIncome', {
                 by: amount,

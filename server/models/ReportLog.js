@@ -20,7 +20,7 @@ const ReportLog = sequelize.define('ReportLog', {
         allowNull: true
     },
     fileUrl: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         allowNull: false
     },
     status: {

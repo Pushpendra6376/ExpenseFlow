@@ -9,17 +9,24 @@ const s3 = new AWS.S3({
 
 exports.uploadToS3 = async (data, fileName) => {
     const isExcel = fileName.endsWith('.xlsx');
-    
-    const params = {
-        Bucket: process.env.AWS_BUCKET_NAME,
-        Key: `reports/${fileName}`, 
-        Body: data,
-        //ACL: 'public-read', // Taaki user link se download kar sake
-        ContentType: isExcel 
-            ? "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" 
-            : "text/csv",
-    };
 
-    const result = await s3.upload(params).promise();
-    return result.Location; // Ye URL return karega
+    const key = `reports/${fileName}`;
+
+    await s3.upload({
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Key: key,
+        Body: data,
+        ContentType: isExcel
+            ? "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            : "text/csv"
+    }).promise();
+
+    // 🔥 Signed URL (valid for 5 minutes)
+    const signedUrl = s3.getSignedUrl('getObject', {
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Key: key,
+        Expires: 60 * 5
+    });
+
+    return signedUrl;
 };
